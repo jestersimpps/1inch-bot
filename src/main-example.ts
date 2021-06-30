@@ -90,7 +90,7 @@
 //  * @returns swap transaction
 //  */
 // async function apiCaller(url, nonce) {
-//   let temp = await axios.get(url); //get the api call
+// //   let temp = await axios.get(url); //get the api call
 //   temp = temp.data; //we only want the data object from the api call
 //   delete temp.tx.gasPrice; //ethersjs will find the gasPrice needed
 //   delete temp.tx.gas; //ethersjs will find the gasLimit for users

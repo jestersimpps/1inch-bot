@@ -341,6 +341,11 @@
     "@ethersproject/properties" "^5.4.0"
     "@ethersproject/strings" "^5.4.0"
 
+"@types/node@^15.12.5":
+  version "15.12.5"
+  resolved "https://registry.nlark.com/@types/node/download/@types/node-15.12.5.tgz?cache=0&sync_timestamp=1624763102752&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fnode%2Fdownload%2F%40types%2Fnode-15.12.5.tgz#9a78318a45d75c9523d2396131bd3cca54b2d185"
+  integrity sha1-mngxikXXXJUj0jlhMb08ylSy0YU=
+
 aes-js@3.0.0:
   version "3.0.0"
   resolved "https://registry.npm.taobao.org/aes-js/download/aes-js-3.0.0.tgz#e21df10ad6c2053295bcbb8dab40b09dbea87e4d"
@@ -367,6 +372,11 @@ brorand@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npm.taobao.org/brorand/download/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
   integrity sha1-EsJe/kCkXjwyPrhnWgoM5XsiNx8=
+
+dotenv@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.nlark.com/dotenv/download/dotenv-10.0.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fdotenv%2Fdownload%2Fdotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
+  integrity sha1-PUInuPuV+BCWzdK2ZlP7LHCFuoE=
 
 elliptic@6.5.4:
   version "6.5.4"
