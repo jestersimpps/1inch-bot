@@ -5,6 +5,8 @@ import axios from "axios";
 const baseUrl = `https://api.1inch.exchange/v3.0`;
 const MATICprovider = new ethers.providers.JsonRpcProvider("https://rpc-mainnet.maticvigil.com"); //rpc can be replaced with an ETH or BSC RPC
 const wallet = new ethers.Wallet(`0x${process.env.PRIVATE_KEY}`, MATICprovider); //connect the matic provider along with using the private key as a signer
+const weiDecimals = 1000000000000000000;
+
 export class Api {
   constructor() {}
 
@@ -12,14 +14,18 @@ export class Api {
     try {
       const listUrl = `${baseUrl}/${chain}/tokens`;
       const tokenObject = (await axios.get(listUrl)).data.tokens;
-
+      const balanceURL = `https://balances.1inch.exchange/v1.1/${chain}/allowancesAndBalances/0x11111112542d85b3ef69ae05771c2dccff4faa26/${process.env.PUBLIC_KEY}?tokensFetchType=listedTokens`;
+      const balances = (await axios.get(balanceURL)).data;
       const tokens: Token[] = Object.keys(tokenObject).map((t: string) => ({ pair: `${tokenObject[t].symbol}${baseCurrency.name}`, ...tokenObject[t] }));
       const tokenPricesUrl = `https://token-prices.1inch.exchange/v1.1/${chain}`;
       const response = (await axios.get(tokenPricesUrl)).data;
       const tokenPrices = response.message ? new Error(response.message) : response;
-      const usdcPrice = +tokenPrices[baseCurrency.address] / 1000000000000000000;
+      const usdcPrice = +tokenPrices[baseCurrency.address] / weiDecimals;
+
       for (const token of tokens) {
-        token.price = (+tokenPrices[token.address] / 1000000000000000000) * (1 / usdcPrice);
+        token.price = (+tokenPrices[token.address] / weiDecimals) * (1 / usdcPrice);
+        token.balance = +balances[token.address].balance ? +balances[token.address].balance / Math.pow(10, +token.decimals) : 0;
+        token.allowance = +balances[token.address].allowance ? +balances[token.address].allowance / Math.pow(10, +token.decimals) : 0;
       }
       return tokens;
     } catch {
@@ -27,10 +33,10 @@ export class Api {
     }
   }
 
-  async swap(fromTokenAddress: string, toTokenAddress: string, amount: number, slippage = 1, chain: Chain | string = Chain.Polygon): Promise<void> {
+  async swap(fromToken: Token, toToken: Token, amount: number, slippage = 1, chain: Chain | string = Chain.Polygon): Promise<void> {
     try {
-      const wei = amount * 1000000000000000000;
-      const url = `${baseUrl}/${chain}/swap?fromAddress=${process.env.PUBLIC_KEY}&fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&amount=${wei}&slippage=${slippage}`;
+      const wei = amount * Math.pow(10, +fromToken.decimals);
+      const url = `${baseUrl}/${chain}/swap?fromAddress=${process.env.PUBLIC_KEY}&fromTokenAddress=${fromToken.address}&toTokenAddress=${toToken.address}&amount=${wei}&slippage=${slippage}`;
       console.log(url);
       const response = await axios.get(url);
 
@@ -50,7 +56,7 @@ export class Api {
 
       await wallet.sendTransaction(transaction).then((errors) => {
         //catch any errors
-        if (errors) console.log(errors);
+        if (errors) console.log(errors.data['message']);
       }); //send the transaction
       console.log(`Transaction success`);
     } catch (e) {

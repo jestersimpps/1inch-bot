@@ -6,6 +6,8 @@ export interface Token {
   address: string;
   logoURI: string;
   price: number;
+  balance: number;
+  allowance: number;
 }
 
 export interface TradeParam {
@@ -16,7 +18,7 @@ export interface TradeParam {
   price: number;
   amount: number;
   slippage?: 1;
-  status: number; // 0 is pending, 1 is executed
+  status: number; // 0 is pending, 1 is executed, 2 is repeat until out of balance
 }
 
 export enum Chain {

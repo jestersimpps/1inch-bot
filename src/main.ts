@@ -10,12 +10,19 @@ const api = new Api();
 
 const executeOrders = async () => {
   const orders: TradeParam[] = await db.get("orders");
+  let lastChain = null;
+  let tokens = [];
   for (const order of orders) {
-    // 0 is pending, 1 is executed
-    if (order.status === 0) {
-      if (order.type === "BUY") await limitBuy(api, db, order);
-      if (order.type === "SELL") await limitSell(api, db, order);
-      if (order.type === "STOPSELL") await stopLoss(api, db, order);
+    if (!lastChain || order.chain !== lastChain) {
+      tokens = await api.getTokenList(order.chain);
+      lastChain = order.chain;
+    }
+
+    // 0 is pending, 1 is executed, 2 is repeating
+    if (order.status !== 1) {
+      if (order.type === "BUY") await limitBuy(api, db, tokens, order);
+      if (order.type === "SELL") await limitSell(api, db, tokens, order);
+      if (order.type === "STOPSELL") await stopLoss(api, db, tokens, order);
     }
   }
 };
