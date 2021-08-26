@@ -474,6 +474,11 @@ scrypt-js@3.0.1:
   resolved "https://registry.npm.taobao.org/scrypt-js/download/scrypt-js-3.0.1.tgz#d314a57c2aef69d1ad98a138a21fe9eafa9ee312"
   integrity sha1-0xSlfCrvadGtmKE4oh/p6vqe4xI=
 
+simple-json-db@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.nlark.com/simple-json-db/download/simple-json-db-1.2.3.tgz#ea7256bbbb1205b4af079f9bed2611e33401bce7"
+  integrity sha1-6nJWu7sSBbSvB5+b7SYR4zQBvOc=
+
 ws@7.4.6:
   version "7.4.6"
   resolved "https://registry.nlark.com/ws/download/ws-7.4.6.tgz#5654ca8ecdeee47c33a9a4bf6d28e2be2980377c"

@@ -8,6 +8,17 @@ export interface Token {
   price: number;
 }
 
+export interface TradeParam {
+  symbol: string;
+  quote: string;
+  chain: Chain;
+  type: "BUY" | "SELL";
+  price: number;
+  amount: number;
+  slippage?: 1;
+  status: number; // 0 is pending, 1 is executed
+}
+
 export enum Chain {
   "Ethereum" = 1,
   "Polygon" = 137,
