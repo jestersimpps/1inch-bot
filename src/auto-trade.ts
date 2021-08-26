@@ -39,3 +39,20 @@ export const limitSell = async (api: Api, db, order: TradeParam) => {
     console.log(`SELL ${order.amount} ${tradeToken.symbol} when ${tradeToken.symbol}/${quoteToken.symbol} price is above ${order.price} - last price: ${currentPrice}`);
   }
 };
+
+export const stopLoss = async (api: Api, db, order: TradeParam) => {
+  const orders: TradeParam[] = await db.get("orders");
+  const tokens = await api.getTokenList(order.chain);
+  const tradeToken = tokens.find((t) => t.symbol === order.symbol);
+  const quoteToken = tokens.find((t) => t.symbol === order.quote);
+
+  const currentPrice = tradeToken.price / quoteToken.price;
+
+  if (currentPrice <= order.price) {
+    const swap = await api.swap(tradeToken.address, quoteToken.address, order.amount, order.slippage, order.chain);
+    await updateExecuted(db, order);
+    console.log(swap);
+  } else {
+    console.log(`SELL ${order.amount} ${tradeToken.symbol} when ${tradeToken.symbol}/${quoteToken.symbol} price is below ${order.price} - last price: ${currentPrice}`);
+  }
+};

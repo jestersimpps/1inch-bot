@@ -12,7 +12,7 @@ export interface TradeParam {
   symbol: string;
   quote: string;
   chain: Chain;
-  type: "BUY" | "SELL";
+  type: "BUY" | "SELL" | "STOPSELL";
   price: number;
   amount: number;
   slippage?: 1;

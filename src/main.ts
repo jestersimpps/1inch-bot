@@ -3,7 +3,7 @@ const JSONdb = require("simple-json-db");
 
 import { TradeParam } from "./models";
 import { Api } from "./api";
-import { limitBuy, limitSell } from "./auto-trade";
+import { limitBuy, limitSell, stopLoss } from "./auto-trade";
 
 const db = new JSONdb("trade-params.json");
 const api = new Api();
@@ -15,6 +15,7 @@ const executeOrders = async () => {
     if (order.status === 0) {
       if (order.type === "BUY") await limitBuy(api, db, order);
       if (order.type === "SELL") await limitSell(api, db, order);
+      if (order.type === "STOPSELL") await stopLoss(api, db, order);
     }
   }
 };
