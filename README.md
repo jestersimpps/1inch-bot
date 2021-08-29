@@ -1,5 +1,5 @@
 # 1inch-bot
-1inch exchange trade bot that allows for limit orders, stop loss oders, take profits on polygon (matic)
+1inch exchange trade bot that allows for limit orders, stop loss oders, take profits on ethereum/polygon (matic)
 
 
 # running the app
