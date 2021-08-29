@@ -12,6 +12,7 @@ const executeOrders = async () => {
   const orders: TradeParam[] = await db.get("orders");
   let lastChain = null;
   let tokens = [];
+  
   for (const order of orders) {
     if (!lastChain || order.chain !== lastChain) {
       tokens = await api.getTokenList(order.chain);

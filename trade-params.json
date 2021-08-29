@@ -5,8 +5,8 @@
       "quote": "amUSDC",
       "chain": 137,
       "type": "BUY",
-      "price": 1.4,
-      "amount": 1,
+      "price": 1.43,
+      "amount": 50,
       "status": 2
     },
     {
@@ -14,9 +14,18 @@
       "quote": "amUSDC",
       "chain": 137,
       "type": "SELL",
-      "price": 1.41,
-      "amount": 1,
+      "price": 1.45,
+      "amount": 35,
       "status": 2
+    },
+    {
+      "symbol": "QUICK",
+      "quote": "USDC",
+      "chain": 137,
+      "type": "SELL",
+      "price": 750,
+      "amount": 14,
+      "status": 0
     }
   ]
 }
