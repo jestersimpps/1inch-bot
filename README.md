@@ -8,7 +8,9 @@
 
 `yarn` or `npm i`
 
-## set trade parameters in de `trade-params.json`
+## configure orders
+
+set trade parameters in de `trade-params.json`
 
 ```
 {
@@ -49,8 +51,14 @@ quote is the symbol you are trading against, in my example i'm swapping from/to 
 status should be initially set to 0, when an order is executed, the app will change status to 1.
 if you want to have an order recur, set status to 2.
 
-## copy the `.env-example` and rename it to `.env`, adjust the values.
+## hook it up to your wallet
+
+copy the `.env-example` and rename it to `.env`, adjust the values.
 
 `REFRESH_INTERVAL` is the interval the bot updates prices/trades in milliseconds. The example is set to 1 minute
+
+you can extract your public and private keys from your metamask browser extention. 
+
+**Also be sure to approve the allowances in the 1inch app first, I still need to add a piece of code that approves the allowances in the bot.
 
 
