@@ -61,6 +61,14 @@ you can extract your public and private keys from your metamask browser extentio
 
 **Also be sure to approve the allowances in the 1inch app first, I still need to add a piece of code that approves the allowances in the bot.
 
-# running the app
+# compiling and running the app
+
+## compilation
+
+be sure to have typescript installed
+
+`tsc`
+
+## running after compilation
 
 `node dist/main`
