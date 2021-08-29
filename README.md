@@ -65,7 +65,7 @@ you can extract your public and private keys from your metamask browser extentio
 
 ## compilation
 
-be sure to have typescript installed
+be sure you have typescript installed
 
 `tsc`
 
