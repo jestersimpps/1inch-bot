@@ -2,7 +2,7 @@
 1inch exchange trade bot that allows for limit orders, stop loss oders, take profits on ethereum/polygon (matic)
 
 
-# running the app
+# configuring the app
 
 ## install dependencies
 
@@ -61,4 +61,6 @@ you can extract your public and private keys from your metamask browser extentio
 
 **Also be sure to approve the allowances in the 1inch app first, I still need to add a piece of code that approves the allowances in the bot.
 
+# running the app
 
+`node dist/main`
