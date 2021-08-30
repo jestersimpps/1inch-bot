@@ -11,14 +11,17 @@ export interface Token {
 }
 
 export interface TradeParam {
+  id: number;
   symbol: string;
   quote: string;
   chain: Chain;
-  type: "BUY" | "SELL" | "STOPSELL";
+  type: "BUY" | "SELL" | "STOPSELL" | "STOPBUY";
   price: number;
   amount: number;
   slippage?: 1;
-  status: number; // 0 is pending, 1 is executed, 2 is repeat until out of balance
+  recurring?: boolean;
+  force?: boolean;
+  status: "PENDING" | "EXECUTING" | "EXECUTED";
 }
 
 export enum Chain {

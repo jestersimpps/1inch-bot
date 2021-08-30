@@ -1,12 +1,11 @@
 import { TradeParam } from "./models";
 import { Api } from "./api";
+import axios from "axios";
 
-const updateExecuted = async (db, order: TradeParam) => {
-  if (order.status === 0) {
-    const orders: TradeParam[] = await db.get("orders");
-    const filteredOrders = orders.filter((o) => o.symbol !== order.symbol && o.price !== order.price && o.chain !== order.chain && o.amount !== order.amount);
-    await db.set("orders", [...filteredOrders, { ...order, status: 1 }]);
-  }
+const updateStatus = async (db, order: TradeParam, status: string) => {
+  const orders: TradeParam[] = await db.get("orders");
+  const filteredOrders = orders.filter((o) => o.id !== order.id);
+  await db.set("orders", [...filteredOrders, { ...order, status: status }]);
 };
 
 export const limitBuy = async (api: Api, db, tokens, order: TradeParam) => {
@@ -17,16 +16,25 @@ export const limitBuy = async (api: Api, db, tokens, order: TradeParam) => {
     const currentPrice = tradeToken.price / quoteToken.price;
 
     if (order.amount > quoteToken.balance) {
-      console.log(`BUY ${order.amount / order.price} ${tradeToken.symbol} for ${order.amount} ${quoteToken.symbol} - not enough balance - balance: ${quoteToken.balance}`);
+      console.log(`BUY ${order.amount} ${tradeToken.symbol} for${order.amount * order.price} ${quoteToken.symbol} - not enough balance - balance: ${quoteToken.balance}`);
     } else {
       console.log(
-        `BUY ${order.amount / order.price} ${tradeToken.symbol} for ${order.amount} ${quoteToken.symbol} when ${tradeToken.symbol}/${quoteToken.symbol} price is below ${
+        `BUY ${order.amount} ${tradeToken.symbol} for ${order.amount * order.price} ${quoteToken.symbol} when ${tradeToken.symbol}/${quoteToken.symbol} price is below ${
           order.price
         } - last price: ${currentPrice}`
       );
       if (currentPrice <= order.price) {
-        updateExecuted(db, order);
-        await api.swap(quoteToken, tradeToken, order.amount, order.slippage, order.chain);
+        updateStatus(db, order, "EXECUTING");
+        const scannerUrl = await api.swap(quoteToken, tradeToken, order.amount * order.price, order.force, order.slippage, order.chain);
+        if (scannerUrl) {
+          if (order.recurring) {
+            updateStatus(db, order, "PENDING");
+          } else {
+            updateStatus(db, order, "EXECUTED");
+          }
+        } else {
+          updateStatus(db, order, "PENDING");
+        }
       }
     }
   } else {
@@ -50,8 +58,17 @@ export const limitSell = async (api: Api, db, tokens, order: TradeParam) => {
       );
 
       if (currentPrice >= order.price) {
-        updateExecuted(db, order);
-        await api.swap(tradeToken, quoteToken, order.amount, order.slippage, order.chain);
+        updateStatus(db, order, "EXECUTING");
+        const scannerUrl = await api.swap(tradeToken, quoteToken, order.amount, order.force, order.slippage, order.chain);
+        if (scannerUrl) {
+          if (order.recurring) {
+            updateStatus(db, order, "PENDING");
+          } else {
+            updateStatus(db, order, "EXECUTED");
+          }
+        } else {
+          updateStatus(db, order, "PENDING");
+        }
       }
     }
   } else {
@@ -59,7 +76,42 @@ export const limitSell = async (api: Api, db, tokens, order: TradeParam) => {
   }
 };
 
-export const stopLoss = async (api: Api, db, tokens, order: TradeParam) => {
+export const stopBuy = async (api: Api, db, tokens, order: TradeParam) => {
+  const tradeToken = tokens.find((t) => t.symbol === order.symbol);
+  const quoteToken = tokens.find((t) => t.symbol === order.quote);
+
+  if (tradeToken && quoteToken) {
+    const currentPrice = tradeToken.price / quoteToken.price;
+
+    if (order.amount > quoteToken.balance) {
+      console.log(`BUY ${order.amount} ${tradeToken.symbol} for${order.amount * order.price} ${quoteToken.symbol} - not enough balance - balance: ${quoteToken.balance}`);
+    } else {
+      console.log(
+        `BUY ${order.amount} ${tradeToken.symbol} for ${order.amount * order.price} ${quoteToken.symbol} when ${tradeToken.symbol}/${quoteToken.symbol} price is above ${
+          order.price
+        } - last price: ${currentPrice}`
+      );
+      if (currentPrice >= order.price) {
+        updateStatus(db, order, "EXECUTING");
+        const scannerUrl = await api.swap(quoteToken, tradeToken, order.amount * order.price, order.force, order.slippage, order.chain);
+        if (scannerUrl) {
+          if (order.recurring) {
+            updateStatus(db, order, "PENDING");
+          } else {
+            updateStatus(db, order, "EXECUTED");
+          }
+        } else {
+          updateStatus(db, order, "PENDING");
+        }
+      }
+    }
+  } else {
+    console.log(`API busy`);
+  }
+};
+
+
+export const stopSell = async (api: Api, db, tokens, order: TradeParam) => {
   const tradeToken = tokens.find((t) => t.symbol === order.symbol);
   const quoteToken = tokens.find((t) => t.symbol === order.quote);
   if (tradeToken && quoteToken) {
@@ -74,8 +126,17 @@ export const stopLoss = async (api: Api, db, tokens, order: TradeParam) => {
         } - last price: ${currentPrice}`
       );
       if (currentPrice <= order.price) {
-        updateExecuted(db, order);
-        await api.swap(tradeToken, quoteToken, order.amount, order.slippage, order.chain);
+        updateStatus(db, order, "EXECUTING");
+        const scannerUrl = await api.swap(tradeToken, quoteToken, order.amount, order.force, order.slippage, order.chain);
+        if (scannerUrl) {
+          if (order.recurring) {
+            updateStatus(db, order, "PENDING");
+          } else {
+            updateStatus(db, order, "EXECUTED");
+          }
+        } else {
+          updateStatus(db, order, "PENDING");
+        }
       }
     }
   } else {

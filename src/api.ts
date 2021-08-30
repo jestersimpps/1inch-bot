@@ -34,7 +34,7 @@ export class Api {
     }
   }
 
-  async swap(fromToken: Token, toToken: Token, amount: number, slippage = 1, chain: Chain | string = Chain.Polygon): Promise<void> {
+  async swap(fromToken: Token, toToken: Token, amount: number, force = false, slippage = 1, chain: Chain | string = Chain.Polygon): Promise<string> {
     try {
       const wei = amount * Math.pow(10, +fromToken.decimals);
       const url = `${baseUrl}/${chain}/swap?fromAddress=${process.env.PUBLIC_KEY}&fromTokenAddress=${fromToken.address}&toTokenAddress=${toToken.address}&amount=${wei}&slippage=${slippage}`;
@@ -48,25 +48,67 @@ export class Api {
         // console.log(parseInt(tokenObject["tx"]["value"]));
 
         const transaction = {
-          // ...tokenObject["tx"],
           from: tokenObject["tx"].from,
           to: tokenObject["tx"].to,
           data: tokenObject["tx"].data,
           value: `0x${parseInt(tokenObject["tx"]["value"]).toString(16)}`,
-          // gasPrice: `0x${parseInt(tokenObject["tx"]["gasPrice"]).toString(16)}`,
         };
 
-        await wallet.sendTransaction(transaction).then((swap) => {
-          //catch any errors
-          if (swap) {
-            console.log(`SWAP ${amount} ${fromToken.symbol} to ${toToken.symbol} - hash: https://polygonscan.com/tx/${swap["hash"]}`);
-          }
-        }); //send the transaction
+        return new Promise((resolve, reject) => {
+          const trySwap = async () =>
+            wallet
+              .sendTransaction(transaction)
+              .then((swap) => {
+                if (swap) {
+                  console.log(`SWAP ${amount} ${fromToken.symbol} to ${toToken.symbol} - hash: https://polygonscan.com/tx/${swap["hash"]}`);
+                  const scannerUrl = `https://polygonscan.com/tx/${swap["hash"]}`;
+                  if (swap["hash"]) {
+                    if (force) {
+                      const checkInterval = setInterval(async () => {
+                        axios
+                          .get(scannerUrl)
+                          .then((response) => {
+                            if (response.data.includes(`Fail with error`)) {
+                              console.warn(`SWAP ${amount} ${fromToken.symbol} to ${toToken.symbol} - SWAP failed, retrying...`);
+                              clearInterval(checkInterval);
+                              trySwap();
+                            } else if (response.data.includes(`<i class='fa fa-check-circle mr-1'></i>Success`)) {
+                              console.log(`SWAP ${amount} ${fromToken.symbol} to ${toToken.symbol} - SWAP succeeded.`);
+                              clearInterval(checkInterval);
+                              resolve(scannerUrl);
+                            } else if (response.data.includes(`Sorry, We are unable to locate this TxnHash`)) {
+                              console.log(`SWAP ${amount} ${fromToken.symbol} to ${toToken.symbol} - unable to find transaction hash.`);
+                              clearInterval(checkInterval);
+                            } else {
+                              console.log(`SWAP ${amount} ${fromToken.symbol} to ${toToken.symbol} - transaction pending...`);
+                            }
+                          })
+                          .catch((e) => {
+                            console.error(`SWAP ${amount} ${fromToken.symbol} to ${toToken.symbol} - SWAP failed: ${e}`);
+                            clearInterval(checkInterval);
+                            trySwap();
+                          });
+                      }, 10 * 1000);
+                    } else {
+                      resolve(scannerUrl);
+                    }
+                  } else {
+                    resolve(null);
+                  }
+                }
+              })
+              .catch((e) => {
+                resolve(null);
+              });
+          trySwap();
+        });
       } else {
         console.error(response.statusText);
+        return null;
       }
     } catch (e) {
       console.error(e);
+      return null;
     }
   }
 

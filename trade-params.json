@@ -1,31 +1,59 @@
 {
-  "orders": [
-    {
-      "symbol": "amWMATIC",
-      "quote": "amUSDC",
-      "chain": 137,
-      "type": "BUY",
-      "price": 1.43,
-      "amount": 50,
-      "status": 2
-    },
-    {
-      "symbol": "amWMATIC",
-      "quote": "amUSDC",
-      "chain": 137,
-      "type": "SELL",
-      "price": 1.45,
-      "amount": 35,
-      "status": 2
-    },
-    {
-      "symbol": "QUICK",
-      "quote": "USDC",
-      "chain": 137,
-      "type": "SELL",
-      "price": 750,
-      "amount": 14,
-      "status": 0
-    }
-  ]
+    "orders": [
+        {
+            "id": 2,
+            "symbol": "amWETH",
+            "quote": "amUSDC",
+            "chain": 137,
+            "type": "SELL",
+            "price": 3300,
+            "amount": 0.015,
+            "status": "PENDING",
+            "recurring": true
+        },
+        {
+            "id": 3,
+            "symbol": "amWMATIC",
+            "quote": "amUSDC",
+            "chain": 137,
+            "type": "SELL",
+            "price": 1.45,
+            "amount": 50,
+            "status": "PENDING",
+            "recurring": true
+        },
+        {
+            "id": 5,
+            "symbol": "amWMATIC",
+            "quote": "amUSDC",
+            "chain": 137,
+            "type": "STOPBUY",
+            "price": 1.42,
+            "amount": 10000,
+            "status": "PENDING",
+            "recurring": false
+        },
+        {
+            "id": 1,
+            "symbol": "amWETH",
+            "quote": "amUSDC",
+            "chain": 137,
+            "type": "BUY",
+            "price": 3300,
+            "amount": 0.015,
+            "status": "EXECUTING",
+            "recurring": true
+        },
+        {
+            "id": 4,
+            "symbol": "amWMATIC",
+            "quote": "amUSDC",
+            "chain": 137,
+            "type": "BUY",
+            "price": 1.4,
+            "amount": 100,
+            "status": "EXECUTING",
+            "recurring": true
+        }
+    ]
 }

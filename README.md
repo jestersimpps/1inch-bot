@@ -1,6 +1,6 @@
 # 1inch-bot
-1inch exchange trade bot that allows for limit orders, stop loss oders, take profits on ethereum/polygon (matic)
 
+1inch exchange trade bot that allows for limit orders, stop loss oders, take profits on ethereum/polygon (matic)
 
 # configuring the app
 
@@ -22,7 +22,8 @@ set trade parameters in de `trade-params.json`
       "type": "BUY",
       "price": 1.43,
       "amount": 50,
-      "status": 2
+      "recurring": true,
+      "status": "PENDING"
     },
     {
       "symbol": "amWMATIC",
@@ -31,7 +32,8 @@ set trade parameters in de `trade-params.json`
       "type": "SELL",
       "price": 1.45,
       "amount": 35,
-      "status": 2
+      "recurring": true,
+      "status": "PENDING"
     },
     {
       "symbol": "QUICK",
@@ -40,16 +42,14 @@ set trade parameters in de `trade-params.json`
       "type": "SELL",
       "price": 750,
       "amount": 14,
-      "status": 0
+      "status": "PENDING"
     }
   ]
 }
 ```
 
 quote is the symbol you are trading against, in my example i'm swapping from/to amUSDC.
-
-status should be initially set to 0, when an order is executed, the app will change status to 1.
-if you want to have an order recur, set status to 2.
+if you want to set up a recurring order, add the parameter recurring and set it to `true`.
 
 ## hook it up to your wallet
 
@@ -57,9 +57,9 @@ copy the `.env-example` and rename it to `.env`, adjust the values.
 
 `REFRESH_INTERVAL` is the interval the bot updates prices/trades in milliseconds. The example is set to 1 minute
 
-you can extract your public and private keys from your metamask browser extention. 
+you can extract your public and private keys from your metamask browser extention.
 
-**Also be sure to approve the allowances in the 1inch app first, I still need to add a piece of code that approves the allowances in the bot.
+\*\*Also be sure to approve the allowances in the 1inch app first, I still need to add a piece of code that approves the allowances in the bot.
 
 # compiling and running the app
 
